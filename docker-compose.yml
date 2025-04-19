@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Database
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword  # Thay đổi trong môi trường sản xuất
+      MYSQL_DATABASE: spotify_clone
+      MYSQL_USER: ben
+      MYSQL_PASSWORD: 123456789Ben.
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Web application
+  web:
+    build: .
+    container_name: spotify_clone
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    env_file:
+      - .envs/.local/django.env
+    environment:
+      - DB_HOST=db
+      - DB_NAME=spotify_clone
+      - DB_USER=ben
+      - DB_PASSWORD=123456789Ben.
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    networks:
+      - app_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume: 
