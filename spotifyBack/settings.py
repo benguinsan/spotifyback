@@ -28,12 +28,12 @@ APP_DIR = BASE_DIR / "apps"
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1^f7x7to4z(^hz$(ix(+s841$n)w=_qb3!xy=9+jxyg018c)-_'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -102,11 +102,11 @@ WSGI_APPLICATION = 'spotifyBack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'spotify_clone'),
-        'USER': os.environ.get('DB_USER', 'ben'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', '123456789Ben.'),
-        'HOST': os.environ.get('DB_HOST', '172.21.142.163'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        'NAME': env('DB_NAME', default='spotify_clone'),
+        'USER': env('DB_USER', default='ben'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env('DB_PORT', default='3306'),
     }
 }
 
