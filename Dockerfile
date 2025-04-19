@@ -25,6 +25,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project
 COPY . .
 
+# Create env file from example if it doesn't exist
+RUN if [ ! -f .envs/.local/django.env ]; then \
+    mkdir -p .envs/.local && \
+    cp -n .envs/.local/django.env.example .envs/.local/django.env || true; \
+    fi
+
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser
 
