@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'djoser',
     'drf_spectacular',
     'django_filters',
+    'corsheaders',
+
 
     'apps.users',
     'apps.subscriptions',
@@ -65,6 +67,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -164,6 +167,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # DEFAULT USER MODEL
 AUTH_USER_MODEL = "users.User"
 
+# DOC
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Spotify Clone API",
+    "DESCRIPTION": "This is the Spotify-Clone-API project, which is a clone of the Spotify web service."
+    " This API implements a basic set of functionalities allowing users to interact with the platform.",
+    "VERSION": "0.1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api/v1/",
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # TODO: Uncomment this line to enable JWT authentication by HttpOnly Cookie
@@ -241,3 +255,19 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",
 }
+
+# Cho phép tất cả các domain (chỉ nên dùng trong môi trường phát triển)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Hoặc chỉ định các domain cụ thể
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React mặc định
+    "http://localhost:8080",  # Vue.js mặc định
+    "http://localhost:4200",  # Angular mặc định
+    "http://127.0.0.1:3000",
+    # Thêm domain của frontend production nếu cần
+]
+
+# Cho phép credentials (cookies, authorization headers, etc.)
+CORS_ALLOW_CREDENTIALS = True
+

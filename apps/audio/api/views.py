@@ -13,8 +13,12 @@ from apps.audio.models import Track
 from apps.core import filters, pagination
 from apps.core.permissions import ArtistRequiredPermission, IsPremiumUserPermission
 
-# Get Track List (GET)
-class GetTrackListAPIView(generics.ListAPIView):
+# Get List Track (GET)
+class TrackListAPIView(generics.ListAPIView):
+    """
+    Track list. Public permission.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -26,8 +30,12 @@ class GetTrackListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Track.objects.select_related("artist", "license", "genre", "album").filter(is_private=False)
 
-# Get Track List Liked (GET)
-class GetTrackLikedListAPIView(generics.ListAPIView):
+# Get List Track Liked (GET)
+class TrackLikedListAPIView(generics.ListAPIView):
+    """
+    Track liked list. Private permission.
+    """
+
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.LargeResultsSetPagination
@@ -37,10 +45,16 @@ class GetTrackLikedListAPIView(generics.ListAPIView):
     ordering_fields = ["release_date", "created_at", "plays_count", "downloads_count", "likes_count"]
 
     def get_queryset(self):
-        return Track.objects.select_related("artist", "license", "genre", "album").filter(user_of_likes=self.request.user)
+        return Track.objects.select_related("artist", "license", "genre", "album").filter(
+            user_of_likes=self.request.user
+        )
 
-# Get Detail Track (GET)
+# Get, Post List Track Liked (GET, POST)
 class TrackDetailAPIView(generics.RetrieveAPIView):
+    """
+    Track detail. Public permission.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = TrackSerializer
     lookup_field = "slug"
@@ -48,8 +62,13 @@ class TrackDetailAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Track.objects.select_related("artist", "license", "genre", "album").filter(is_private=False)
 
-# List all recently played track. (For user or anonymous) (GET)
-class GetTrackRecentlyPlayedAPIView(generics.ListAPIView):
+# Get, Post List Recently Played Track (GET, POST)
+class TrackRecentlyPlayedAPIView(generics.ListAPIView):
+    """
+    List all recently played track. Public view.
+    Filter last played 10 tracks by users or anonymous(by viewer IP).
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -77,8 +96,13 @@ class GetTrackRecentlyPlayedAPIView(generics.ListAPIView):
 
         return Track.objects.none()
 
-# Get played 10 tracks by user_id. (GET)
+# Get List Track Recently Played By User (GET)
 class TrackRecentlyPlayedByUserAPIView(generics.ListAPIView):
+    """
+    List all recently played track. Public view.
+    Filter last played 10 tracks by user_id.
+    """
+
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -97,15 +121,24 @@ class TrackRecentlyPlayedByUserAPIView(generics.ListAPIView):
 
         return last_played
 
-# Get My Track List (GET)
-class GetTrackMyListAPIView(generics.ListAPIView):
-    serializer_class = TrackSerializer
+# Get, Post List My Track (GET, POST)
+class TrackMyListCreateAPIView(generics.ListCreateAPIView):
+    """
+    List all my tracks.
+    Only for authenticated user(artist).
+    """
+
     permission_classes = [ArtistRequiredPermission]
     pagination_class = pagination.StandardResultsSetPagination
     filter_backends = [dj_filters.DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = filters.MyTrackFilter
     search_fields = ["title", "genre__name", "album__title"]
     ordering_fields = ["release_date", "created_at", "plays_count", "downloads_count", "likes_count"]
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return TrackCreateSerializer
+        return TrackSerializer
 
     def get_queryset(self):
         return (
@@ -114,16 +147,15 @@ class GetTrackMyListAPIView(generics.ListAPIView):
             .filter(artist=self.request.user.artist)
         )
 
-# Create Track (POST)
-class CreateTrackAPIView(generics.CreateAPIView):
-    serializer_class = TrackCreateSerializer
-    permission_classes = [ArtistRequiredPermission]
-
     def perform_create(self, serializer):
         serializer.save(artist=self.request.user.artist)
 
-# Get detail Track (GET)
-class GetTrackMyDetailAPIView(generics.RetrieveAPIView):
+# Get, Put, Delete My Track (GET, PUT, DELETE)
+class TrackMyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Track detail. Only for authenticated user(artist).
+    """
+
     permission_classes = [ArtistRequiredPermission]
     serializer_class = TrackCreateSerializer
     lookup_field = "slug"
@@ -135,19 +167,7 @@ class GetTrackMyDetailAPIView(generics.RetrieveAPIView):
             .get(slug=self.kwargs.get("slug"), artist=self.request.user.artist)
         )
 
-# Update detail track (PATCH)
-class UpdateTrackMyDetailAPIView(generics.UpdateAPIView):
-    permission_classes = [ArtistRequiredPermission]
-    serializer_class = TrackCreateSerializer
-    lookup_field = "slug"
-
-# Delete track (DELETE)
-class DeleteTrackMyDetailAPIView(generics.DeleteAPIView):
-    permission_classes = [ArtistRequiredPermission]
-    serializer_class = TrackCreateSerializer
-    lookup_field = "slug"
-
-# 
+# Streaming track (GET)
 class StreamingTrackAPIView(views.APIView):
     """Listen track. Public permission."""
 
@@ -179,7 +199,8 @@ class StreamingTrackAPIView(views.APIView):
         else:
             return Http404
 
-# 
+
+# Streaming track (GET)
 class StreamingMyTrackAPIView(StreamingTrackAPIView):
     """
     Listen my track. Only for authenticated user(artist).
@@ -191,7 +212,8 @@ class StreamingMyTrackAPIView(StreamingTrackAPIView):
     def get_object(self):
         return get_object_or_404(Track, slug=self.kwargs.get("slug"), artist=self.request.user.artist)
 
-# 
+
+# Download track (GET)
 class DownloadTrackAPIView(views.APIView):
     """Download track. Only for premium user."""
 
@@ -215,7 +237,8 @@ class DownloadTrackAPIView(views.APIView):
         else:
             return Http404
 
-# 
+
+# Like/Unlike track (POST, DELETE)
 class TrackLikeUnlikeAPIView(views.APIView):
     """
     Like/Unlike track. Only for authenticated user.
@@ -252,7 +275,6 @@ class TrackLikeUnlikeAPIView(views.APIView):
             track.save()
             return Response({"likes_count": track.likes_count}, status.HTTP_200_OK)
         return Response({"msg": "You have not liked this track."}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 

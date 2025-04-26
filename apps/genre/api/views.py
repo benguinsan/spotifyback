@@ -5,39 +5,44 @@ from apps.core import pagination
 from apps.other.api.serializers import GenreSerializer
 from apps.other.models import Genre
 
-# Get GenreList (GET)
-class GetGenreListAPIView(generics.ListAPIView):
+# Get, Post List Genre (GET, POST)
+class GenreListAPIView(generics.ListCreateAPIView):
+    """
+    API endpoint that allows genres to be viewed.
+    Admin can create new genre.
+    All users can see all genres.
+    Color field generates on image.
+    """
+
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [permissions.AllowAny]
     pagination_class = pagination.MaxResultsSetPagination
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ["name"]
     ordering_fields = ["created_at"]
 
-# Create Genre to GenList (POST)
-class CreateGenreListAPIView(generics.CreateAPIView):
-    queryset = Genre.objects.all() 
-    serializer_class = GenreSerializer
-    permission_classes = [permissions.IsAdminUser]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            self.permission_classes = [permissions.AllowAny]
+        else:
+            self.permission_classes = [permissions.IsAdminUser]
+        return super().get_permissions()
 
-# Genre Detail (GET)
-class GetGenreDetailAPIVIew(generics.RetrieveAPIView):
+# Get, Put, Delete Genre (GET, PUT, DELETE)
+class GenreDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that allows genres details to be viewed.
+    Admin can update and delete genre.
+    Color field generates on image.
+    """
+
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = "slug"
-    permission_classes = [permissions.AllowAny]
 
-# Genre Update (PATCH)
-class UpdateGenreDetailAPIView(generics.UpdateAPIView):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    lookup_field = "slug"
-    permission_classes = [permissions.IsAdminUser]
-
-# Genre Delete (DELETE)
-class DeleteGenreDetailAPIView(generics.DeleteAPIView):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    lookup_field = "slug"
-    permission_classes = [permissions.IsAdminUser]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            self.permission_classes = [permissions.AllowAny]
+        else:
+            self.permission_classes = [permissions.IsAdminUser]
+        return super().get_permissions()

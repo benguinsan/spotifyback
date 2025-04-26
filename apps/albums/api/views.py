@@ -1,4 +1,3 @@
-
 from django_filters import rest_framework as dj_filters
 from rest_framework import generics, permissions, status, views
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -10,8 +9,12 @@ from apps.albums.models import Album, FavoriteAlbum
 from apps.core import filters, pagination
 from apps.core.permissions import ArtistRequiredPermission
 
-# Get List Album public (GET)
-class GetAlbumListAPIView(generics.ListAPIView):
+
+class AlbumListAPIView(generics.ListAPIView):
+    """
+    Album List API View. Public view.
+    """
+
     serializer_class = AlbumSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = pagination.StandardResultsSetPagination
@@ -23,8 +26,12 @@ class GetAlbumListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Album.objects.select_related("artist").filter(is_private=False)
 
-# Get Detail Album public (GET)
-class GetAlbumDetailAPIView(generics.RetrieveAPIView):
+
+class AlbumDetailAPIView(generics.RetrieveAPIView):
+    """
+    Album Detail API View. Public view.
+    """
+
     serializer_class = AlbumDetailSerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = "slug"
@@ -32,8 +39,13 @@ class GetAlbumDetailAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Album.objects.select_related("artist").filter(is_private=False)
 
-# Get My List Album (GET)
-class GetMyAlbumListAPIView(generics.ListAPIView):
+
+class MyAlbumListCreateAPIView(generics.ListCreateAPIView):
+    """
+    My Album List Create API View.
+    Private view, only for authenticated users and owner.
+    """
+
     serializer_class = AlbumDetailSerializer
     permission_classes = [ArtistRequiredPermission]
     pagination_class = pagination.StandardResultsSetPagination
@@ -45,16 +57,16 @@ class GetMyAlbumListAPIView(generics.ListAPIView):
     def get_queryset(self):
         return Album.objects.select_related("artist").filter(artist=self.request.user.artist)
 
-# Create My Album (POST)
-class CreateMyAlbumAPIView(generics.CreateAPIView):
-    serializer_class = AlbumDetailSerializer
-    permission_classes = [ArtistRequiredPermission]
-
     def perform_create(self, serializer):
         serializer.save(artist=self.request.user.artist)
 
-# Get Detail My Album
-class GetMyAlbumDetailAPIView(generics.RetrieveAPIView):
+
+class MyAlbumDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    My Album Detail API View.
+    Private view, only for authenticated users and owner.
+    """
+
     serializer_class = AlbumSerializer
     permission_classes = [ArtistRequiredPermission]
     lookup_field = "slug"
@@ -62,26 +74,13 @@ class GetMyAlbumDetailAPIView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Album.objects.select_related("artist").filter(artist=self.request.user.artist)
 
-# Update Detail My Album
-class UpdateMyAlbumDetailAPIView(generics.UpdateAPIView):
-    serializer_class = AlbumSerializer
-    permission_classes = [ArtistRequiredPermission]
-    lookup_field = "slug"
 
-    def get_queryset(self):
-        return Album.objects.filter(artist=self.request.user.artist)
+class AlbumFavoriteListAPIView(generics.ListAPIView):
+    """
+    Favorite Album List API View.
+    Private view, only for authenticated users and owner.
+    """
 
-# Delete Detail My Album
-class DeleteMyAlbumDetailAPIView(generics.DestroyAPIView):
-    serializer_class = AlbumSerializer
-    permission_classes = [ArtistRequiredPermission]
-    lookup_field = "slug"
-
-    def get_queryset(self):
-        return Album.objects.filter(artist=self.request.user.artist)
-
-# Get List Album Favorite (GET)
-class GetAlbumFavoriteListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = FavoriteAlbumSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -95,34 +94,31 @@ class GetAlbumFavoriteListAPIView(generics.ListAPIView):
             user=self.request.user
         )
 
-# Create Album Favorite (POST)
-class AlbumFavoriteCreateAPIView(views.CreateAPIView):
+
+class AlbumFavoriteCreateAPIView(views.APIView):
+    """
+    Favorite Aalbum Create API View.
+    Private view, only for authenticated users and owner.
+    - `POST`: Add album to favorites.
+    1. If album already in favorites, return `HTTP_400_BAD_REQUEST.
+    2. If album not in favorites, create new favorite and return `HTTP_201_CREATED`.
+    - `DELETE`: Remove album from favorites.
+    1. If album not in favorites, return `HTTP_404_NOT_FOUND`.
+    2. If album in favorites, delete favorite and return `HTTP_204_NO_CONTENT`.
+    """
 
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = None
 
     def post(self, request, *args, **kwargs):
         album = get_object_or_404(Album, slug=kwargs.get("slug"), is_private=False)
-
         favorite_album, created = FavoriteAlbum.objects.get_or_create(user=request.user, album=album)
-
         if not created:
             return Response({"msg": "Album already added to favorites"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"msg": "Album added to favorites"}, status=status.HTTP_201_CREATED)
 
-# Delete Album Favorite (DELETE)
-class AlbumFavoriteDeleteAPIView(views.DestroyAPIView):
-
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = None
-
     def delete(self, request, *args, **kwargs):
         album = get_object_or_404(Album, slug=kwargs.get("slug"), is_private=False)
-
         favorite_album = get_object_or_404(FavoriteAlbum, user=request.user, album=album)
-
         favorite_album.delete()
-        
         return Response({"msg": "Album removed from favorites"}, status=status.HTTP_204_NO_CONTENT)
-
-

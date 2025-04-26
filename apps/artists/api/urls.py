@@ -5,11 +5,13 @@ from . import views
 app_name = "artists"
 
 urlpatterns = [
-    path("", views.GetArtistListAPIView.as_view(), name="artist-list"),
-    path("create/", views.CreateArtistAPIView.as_view(), name="artist-create"),
-    path("detail/<slug:slug>/", views.GetDetailArtistAPIView.as_view(), name="artist-detail"),
-    path("me/", views.GetDetailArtistAPIView.as_view(), name="artist-me"),
-    path("favorite/", views.GetArtistFavoriteListAPIView.as_view(), name="artist-favorite"),
-    path("favorite/create/", views.ArtistFavoriteCreateAPIView.as_view(), name="artist-favorite-create"),
-    path("favorite/delete/", views.ArtistFavoriteDeleteAPIView.as_view(), name="artist-favorite-delete"),
+    path("me/", views.ArtistDetailMeAPIView.as_view(), name="artist-me"),
+    path("me/image/", views.MyArtistImageAPIView.as_view(), name="update-my-artist-profile-image"),
+    path("me/verify/", views.ArtistVerifyMeAPIView.as_view(), name="artist-verify-me"),
+    path("me/license/", views.LicenseListCreateAPIView.as_view(), name="license-list-create"),
+    path("me/license/<int:pk>/", views.LicenseRetrieveUpdateDestroyAPIView.as_view(), name="license-detail"),
+    path("", views.ArtistListCreateAPIView.as_view(), name="artist-list-create"),
+    path("favorite/", views.ArtistFavoriteListAPIView.as_view(), name="artist-favorite"),
+    path("<slug:slug>/", views.ArtistDetailAPIView.as_view(), name="artist-detail"),
+    path("<slug:slug>/favorite/", views.ArtistFavoriteCreateAPIView.as_view(), name="artist-favorite-create-delete"),
 ]
