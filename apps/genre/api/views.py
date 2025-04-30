@@ -2,8 +2,8 @@ from rest_framework import generics, permissions
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 from apps.core import pagination
-from apps.other.api.serializers import GenreSerializer
-from apps.other.models import Genre
+from apps.genre.api.serializers import GenreSerializer
+from apps.genre.models import Genre
 
 # Get, Post List Genre (GET, POST)
 class GenreListAPIView(generics.ListCreateAPIView):

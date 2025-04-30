@@ -3,8 +3,8 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.audio.api.serializers import ShortTrackSerializer
-from apps.other.api.serializers import GenreSerializer
-from apps.other.models import Genre
+from apps.genre.api.serializers import GenreSerializer
+from apps.genre.models import Genre
 from apps.playlists.models import FavoritePlaylist, Playlist
 from apps.users.api.serializers import ShortCustomUserSerializer
 

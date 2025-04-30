@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = "other"
+app_name = "genre"
 
 urlpatterns = [
     path("genres/", views.GenreListAPIView.as_view(), name="genre-list"),

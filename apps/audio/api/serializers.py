@@ -4,8 +4,8 @@ from apps.albums.models import Album
 from apps.artists.api.serializers import LicenseSerializer, ShortArtistSerializer
 from apps.artists.models import License
 from apps.audio.models import Track
-from apps.other.api.serializers import GenreSerializer
-from apps.other.models import Genre
+from apps.genre.api.serializers import GenreSerializer
+from apps.genre.models import Genre
 
 
 class ShortAlbumSerializer(serializers.ModelSerializer):
