@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 from apps.albums.models import Album
-from apps.artists.api.serializers import LicenseSerializer, ShortArtistSerializer
-from apps.artists.models import License
+from apps.artists.api.serializers import ShortArtistSerializer
 from apps.audio.models import Track
 from apps.genre.api.serializers import GenreSerializer
 from apps.genre.models import Genre
@@ -22,7 +21,6 @@ class ShortAlbumSerializer(serializers.ModelSerializer):
 
 class TrackSerializer(serializers.ModelSerializer):
     artist = ShortArtistSerializer(read_only=True, many=False)
-    # license = LicenseSerializer(read_only=True, many=False)
     genre = GenreSerializer(read_only=True, many=False)
     album = ShortAlbumSerializer(read_only=True, many=False)
 
@@ -36,7 +34,6 @@ class TrackSerializer(serializers.ModelSerializer):
             "duration",
             "image",
             "color",
-            "license",
             "genre",
             "album",
             "file",
@@ -77,5 +74,4 @@ class ShortTrackSerializer(TrackSerializer):
 
 class TrackCreateSerializer(TrackSerializer):
     album = serializers.PrimaryKeyRelatedField(queryset=Album.objects.all(), required=False)
-    # license = serializers.PrimaryKeyRelatedField(queryset=License.objects.all())
     genre = serializers.PrimaryKeyRelatedField(queryset=Genre.objects.all())

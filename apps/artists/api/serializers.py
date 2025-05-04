@@ -2,7 +2,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from apps.artists.models import Artist, FavoriteArtist, License
+from apps.artists.models import Artist, FavoriteArtist
 from apps.audio.models import Track
 from apps.users.api.serializers import ShortCustomUserSerializer
 
@@ -22,12 +22,12 @@ class ArtistSerializer(serializers.ModelSerializer):
             "last_name",
             "display_name",
             "image",
-            "color",
             "track_slug",
             "artist_listeners",
             "is_verify",
         ]
-        extra_kwargs = {"is_verify": {"read_only": True}, "color": {"read_only": True}}
+        extra_kwargs = {"is_verify": {"read_only": True}}
+        read_only_fields = ["user"]
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_track_slug(self, obj):
@@ -39,22 +39,13 @@ class ArtistSerializer(serializers.ModelSerializer):
 class ShortArtistSerializer(ArtistSerializer):
     class Meta:
         model = Artist
-        fields = ["id", "slug", "display_name", "image", "color", "is_verify"]
+        fields = ["id", "slug", "display_name", "image", "is_verify"]
 
 
 class UpdateArtistImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
         fields = ("image",)
-
-
-class LicenseSerializer(serializers.ModelSerializer):
-    artist = ShortArtistSerializer(read_only=True, many=False)
-
-    class Meta:
-        model = License
-        fields = ["id", "artist", "name", "text"]
-
 
 class FavoriteArtistSerializer(serializers.ModelSerializer):
     artist = ShortArtistSerializer(read_only=True, many=False)

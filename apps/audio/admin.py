@@ -11,7 +11,6 @@ class TrackAdmin(admin.ModelAdmin):
         "artist",
         "album",
         "duration",
-        "license",
         "genre",
         "is_private",
         "release_date",

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from apps.artists.models import Artist, ArtistVerificationRequest, FavoriteArtist, License
+from apps.artists.models import Artist, ArtistVerificationRequest, FavoriteArtist
 
 
 @admin.register(Artist)
@@ -26,9 +26,3 @@ class ArtistVerificationRequestAdmin(admin.ModelAdmin):
     list_display = ["id", "artist", "is_processed", "created_at", "updated_at"]
     list_display_links = ["id", "artist"]
 
-
-@admin.register(License)
-class LicenseAdmin(admin.ModelAdmin):
-    list_display = ["id", "artist", "name", "created_at", "updated_at"]
-    list_display_links = ["id", "artist", "name"]
-    list_filter = ["created_at", "updated_at"]

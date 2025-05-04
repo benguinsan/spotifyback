@@ -6,11 +6,11 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
 
-from apps.artists.models import Artist, ArtistVerificationRequest, FavoriteArtist, License
+from apps.artists.models import Artist, ArtistVerificationRequest, FavoriteArtist
 from apps.core import filters, pagination
 from apps.core.permissions import ArtistRequiredPermission, IsPremiumUserPermission
 
-from .serializers import ArtistSerializer, FavoriteArtistSerializer, LicenseSerializer, UpdateArtistImageSerializer
+from .serializers import ArtistSerializer, FavoriteArtistSerializer, UpdateArtistImageSerializer
 
 # Get and Post ListArtist (GET, POST)
 class ArtistListCreateAPIView(generics.ListCreateAPIView):
@@ -26,16 +26,15 @@ class ArtistListCreateAPIView(generics.ListCreateAPIView):
     filterset_class = filters.ArtistFilter
     search_fields = ["display_name", "first_name", "last_name"]
     ordering_fields = ["created_at"]
+    permission_classes = [permissions.AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     def get_permissions(self):
         if self.request.method == "POST":
-            self.permission_classes = [permissions.IsAuthenticated]
-        else:
-            self.permission_classes = [permissions.AllowAny]
-        return super().get_permissions()
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
 
 # Detail Artists (GET)
 class ArtistDetailAPIView(generics.RetrieveAPIView):
@@ -138,30 +137,3 @@ class ArtistVerifyMeAPIView(views.APIView):
         artist = request.user.artist
         ArtistVerificationRequest.objects.update_or_create(artist=artist, defaults={"is_processed": False})
         return Response({"msg": "Verification email will be sent in 24 hours."}, status=status.HTTP_200_OK)
-
-# Get, Post List License (GET, POST)
-class LicenseListCreateAPIView(generics.ListCreateAPIView):
-    """
-    License List Create API View. Create only for artist.
-    """
-
-    serializer_class = LicenseSerializer
-    permission_classes = [ArtistRequiredPermission]
-
-    def perform_create(self, serializer):
-        serializer.save(artist=self.request.user.artist)
-
-    def get_queryset(self):
-        return License.objects.select_related("artist").filter(artist=self.request.user.artist)
-
-# Get, Put, Delete License (GET, PUT, DELETE)
-class LicenseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    License Retrieve Update Destroy API View. Only for artist.
-    """
-
-    serializer_class = LicenseSerializer
-    permission_classes = [ArtistRequiredPermission]
-
-    def get_queryset(self):
-        return License.objects.select_related("artist").filter(artist=self.request.user.artist)

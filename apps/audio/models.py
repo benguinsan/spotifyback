@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from mutagen import File
 
 from apps.albums.models import Album
-from apps.artists.models import Artist, License
+from apps.artists.models import Artist
 from apps.core.models import TimeStampedModel
 from apps.core.services import (
     generate_color_from_image,
@@ -38,15 +38,6 @@ class Track(TimeStampedModel):
         validators=[validate_image_size],
         blank=True,
         default="default/track.jpg",
-    )
-    license = models.ForeignKey(
-        License,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="tracks",
-        verbose_name=_("license"),
-        default="",
     )
     genre = models.ForeignKey(
         Genre,
