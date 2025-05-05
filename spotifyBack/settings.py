@@ -53,23 +53,20 @@ INSTALLED_APPS = [
 
 
     'apps.users',
-    'apps.subscriptions',
     'apps.albums',
-    'apps.analytics',
     'apps.artists',
     'apps.audio',
     'apps.core',
     'apps.genre',
-    'apps.payments',
     'apps.playlists',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -207,12 +204,12 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "account/auth/password-reset/{uid}/{token}",
     "USERNAME_RESET_CONFIRM_URL": "account/auth/email-reset/{uid}/{token}",
     "SOCIAL_AUTH_TOKEN_STRATEGY": "djoser.social.token.jwt.TokenStrategy",
-    # "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": env.list(
-    #     "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS",
-    #     default=[
-    #         "http://localhost:3000",
-    #     ],
-    # ),
+    "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS": env.list(
+        "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS",
+        default=[
+            "http://localhost:3000",
+        ],
+    ),
     "ACTIVATION_URL": "account/auth/activate/{uid}/{token}",
     "SERIALIZERS": {
         "user_create_password_retype": "apps.users.api.serializers.CustomUserCreatePasswordRetypeSerializer",
@@ -256,18 +253,39 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SAMESITE": "Lax",
 }
 
-# Cho phép tất cả các domain (chỉ nên dùng trong môi trường phát triển)
+# Cho phép tất cả origins (chỉ dùng trong development)
 CORS_ALLOW_ALL_ORIGINS = True
 
-# Hoặc chỉ định các domain cụ thể
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React mặc định
-    "http://localhost:8080",  # Vue.js mặc định
-    "http://localhost:4200",  # Angular mặc định
-    "http://127.0.0.1:3000",
-    # Thêm domain của frontend production nếu cần
+# Hoặc chỉ định cụ thể các origins được phép (khuyến nghị cho production)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     "https://yourdomain.com",
+# ]
+
+# Cho phép credentials (cookies, authorization headers)
+CORS_ALLOW_CREDENTIALS = True
+
+# Cho phép các methods
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
-# Cho phép credentials (cookies, authorization headers, etc.)
-CORS_ALLOW_CREDENTIALS = True
+# Cho phép các headers
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 

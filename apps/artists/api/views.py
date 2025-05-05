@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from apps.artists.models import Artist, ArtistVerificationRequest, FavoriteArtist
 from apps.core import filters, pagination
-from apps.core.permissions import ArtistRequiredPermission, IsPremiumUserPermission
+from apps.core.permissions import ArtistRequiredPermission
 
 from .serializers import ArtistSerializer, FavoriteArtistSerializer, UpdateArtistImageSerializer
 
@@ -127,10 +127,10 @@ class ArtistFavoriteCreateAPIView(views.APIView):
 # Verify Artist (POST)
 class ArtistVerifyMeAPIView(views.APIView):
     """
-    Artist Verify API View. Only for artist with premium.
+    Artist Verify API View. Only for artists.
     """
 
-    permission_classes = [ArtistRequiredPermission, IsPremiumUserPermission]
+    permission_classes = [ArtistRequiredPermission]
     serializer_class = None
 
     def post(self, request):

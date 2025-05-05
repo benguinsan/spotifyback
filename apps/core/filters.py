@@ -3,7 +3,6 @@ import django_filters
 from apps.albums.models import Album, FavoriteAlbum
 from apps.artists.models import Artist, FavoriteArtist
 from apps.audio.models import Track
-from apps.payments.models import Payment
 from apps.playlists.models import FavoritePlaylist, Playlist
 
 
@@ -102,12 +101,3 @@ class FavoriteArtistFilter(django_filters.FilterSet):
         }
 
 
-class PaymentFilter(django_filters.FilterSet):
-    class Meta:
-        model = Payment
-        fields = {
-            "status": ["exact"],
-            "method": ["exact"],
-            "price": ["exact", "gte", "lte", "range"],
-            "total_price": ["exact", "gte", "lte", "range"],
-        }

@@ -37,7 +37,7 @@ class Track(TimeStampedModel):
         upload_to=get_path_upload_image_track,
         validators=[validate_image_size],
         blank=True,
-        default="default/track.jpg",
+        default="default/album.png",
     )
     genre = models.ForeignKey(
         Genre,
@@ -55,7 +55,7 @@ class Track(TimeStampedModel):
         blank=True,
         related_name="tracks",
         verbose_name=_("album"),
-        default="",
+        default="default/album.png",
     )
     file = models.FileField(
         verbose_name=_("file track"),

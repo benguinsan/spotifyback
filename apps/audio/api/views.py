@@ -7,11 +7,10 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from apps.analytics.models import TrackPlayed
 from apps.audio.api.serializers import ShortTrackSerializer, TrackCreateSerializer, TrackSerializer
 from apps.audio.models import Track
 from apps.core import filters, pagination
-from apps.core.permissions import ArtistRequiredPermission, IsPremiumUserPermission
+from apps.core.permissions import ArtistRequiredPermission
 
 # Get List Track (GET)
 class TrackListAPIView(generics.ListAPIView):
@@ -28,7 +27,7 @@ class TrackListAPIView(generics.ListAPIView):
     ordering_fields = ["release_date", "created_at", "plays_count", "downloads_count", "likes_count"]
 
     def get_queryset(self):
-        return Track.objects.select_related("artist", "license", "genre", "album").filter(is_private=False)
+        return Track.objects.select_related("artist", "genre", "album").filter(is_private=False)
 
 # Get List Track Liked (GET)
 class TrackLikedListAPIView(generics.ListAPIView):
@@ -45,7 +44,7 @@ class TrackLikedListAPIView(generics.ListAPIView):
     ordering_fields = ["release_date", "created_at", "plays_count", "downloads_count", "likes_count"]
 
     def get_queryset(self):
-        return Track.objects.select_related("artist", "license", "genre", "album").filter(
+        return Track.objects.select_related("artist", "genre", "album").filter(
             user_of_likes=self.request.user
         )
 
@@ -60,7 +59,7 @@ class TrackDetailAPIView(generics.RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
-        return Track.objects.select_related("artist", "license", "genre", "album").filter(is_private=False)
+        return Track.objects.select_related("artist", "genre", "album").filter(is_private=False)
 
 # Get, Post List Recently Played Track (GET, POST)
 class TrackRecentlyPlayedAPIView(generics.ListAPIView):
@@ -82,14 +81,14 @@ class TrackRecentlyPlayedAPIView(generics.ListAPIView):
 
         if self.request.user.is_authenticated:
             return (
-                Track.objects.select_related("artist", "license", "genre", "album")
+                Track.objects.select_related("artist", "genre", "album")
                 .filter(is_private=False, plays__user=self.request.user)
                 .order_by("-plays__played_at")[:10]
             )
 
         if viewer_ip:
             return (
-                Track.objects.select_related("artist", "license", "genre", "album")
+                Track.objects.select_related("artist", "genre", "album")
                 .filter(is_private=False, plays__viewer_ip=viewer_ip)
                 .order_by("-plays__played_at")[:10]
             )
@@ -114,7 +113,7 @@ class TrackRecentlyPlayedByUserAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         last_played = (
-            Track.objects.select_related("artist", "license", "genre", "album")
+            Track.objects.select_related("artist", "genre", "album")
             .filter(is_private=False, plays__user=self.kwargs.get("id", None))
             .order_by("-plays__played_at")[:10]
         )
@@ -142,8 +141,8 @@ class TrackMyListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return (
-            Track.objects.select_related("artist", "genre", "license", "album")
-            .prefetch_related("license__artist", "user_of_likes")
+            Track.objects.select_related("artist", "genre", "album")
+            .prefetch_related("user_of_likes")
             .filter(artist=self.request.user.artist)
         )
 
@@ -215,10 +214,10 @@ class StreamingMyTrackAPIView(StreamingTrackAPIView):
 
 # Download track (GET)
 class DownloadTrackAPIView(views.APIView):
-    """Download track. Only for premium user."""
+    """Download track. Public permission."""
 
     serializer_class = None
-    permission_classes = [IsPremiumUserPermission]
+    permission_classes = [permissions.AllowAny]
     http_method_names = ["get"]
 
     @staticmethod

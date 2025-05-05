@@ -4,7 +4,6 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from apps.analytics.models import PlaylistPlayed
 from apps.audio.models import Track
 from apps.core import filters, pagination
 from apps.core.permissions import IsOwnerUserPermission
@@ -45,54 +44,6 @@ class PlaylistDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Playlist.objects.select_related("user", "genre").filter(is_private=False)
-
-    def retrieve(self, request, *args, **kwargs):
-        playlist = self.get_object()
-        viewer_ip = request.META.get("REMOTE_ADDR", None)
-
-        PlaylistPlayed.record_listening(
-            user=request.user if request.user.is_authenticated else None,
-            playlist=playlist,
-            viewer_ip=viewer_ip,
-        )
-
-        return super().retrieve(request, *args, **kwargs)
-
-
-class PlaylistRecentlyPlayedAPIView(generics.ListAPIView):
-    """
-    List all recently played playlist. Public view.
-    Filter last played 10 playlist by users or anonymous(by viewer IP).
-    """
-
-    permission_classes = [permissions.AllowAny]
-    serializer_class = ShortPlaylistSerializer
-    pagination_class = pagination.StandardResultsSetPagination
-    filter_backends = [dj_filters.DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = filters.PlaylistFilter
-    search_fields = ["user__display_name", "title", "tracks__title", "genre__name"]
-    ordering_fields = ["release_date", "created_at"]
-
-    def get_queryset(self):
-        viewer_ip = self.request.META.get("REMOTE_ADDR", None)
-
-        if self.request.user.is_authenticated:
-            return (
-                Playlist.objects.select_related("user", "genre")
-                .prefetch_related("tracks")
-                .filter(is_private=False, playlist_plays__user=self.request.user)
-                .order_by("-playlist_plays__played_at")[:10]
-            )
-
-        if viewer_ip:
-            return (
-                Playlist.objects.select_related("user", "genre")
-                .prefetch_related("tracks")
-                .filter(is_private=False, playlist_plays__viewer_ip=viewer_ip)
-                .order_by("-playlist_plays__played_at")[:10]
-            )
-
-        return Playlist.objects.none()
 
 
 class MyPlaylistListCreateAPIView(generics.ListCreateAPIView):

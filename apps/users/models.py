@@ -8,7 +8,6 @@ from model_utils import Choices
 
 from apps.core.services import generate_color_from_image, get_path_upload_image_user, validate_image_size
 
-from ..subscriptions.models import SubscriptionPlan
 from .managers import CustomUserManager
 
 TYPE_PROFILE_CHOICES = Choices(
@@ -56,14 +55,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank_label="Select Country",
         default="VN",
     )
-    subscription_plan = models.ForeignKey(
-        SubscriptionPlan,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        default="",
-        related_name="users",
-    )
     type_profile = models.CharField(
         verbose_name=_("type profile"),
         max_length=20,
@@ -71,7 +62,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=TYPE_PROFILE_CHOICES.user,
     )
     followers = models.ManyToManyField("self", symmetrical=False, related_name="following", blank=True)
-    is_premium = models.BooleanField(_("is premium"), default=False)
     is_spam_email = models.BooleanField(_("is spam email"), default=False)
 
     # User permissions

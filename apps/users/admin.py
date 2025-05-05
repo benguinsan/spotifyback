@@ -21,16 +21,15 @@ class UserAdmin(BaseUserAdmin):
         "display_name",
         "gender",
         "type_profile",
-        "is_premium",
         "is_staff",
         "is_active",
     ]
 
-    list_editable = ["is_active", "is_premium"]
+    list_editable = ["is_active"]
 
     list_display_links = ["id", "email"]
 
-    list_filter = ["email", "type_profile", "gender", "is_premium", "is_staff", "is_active"]
+    list_filter = ["email", "type_profile", "gender", "is_staff", "is_active"]
 
     fieldsets = (
         (_("Personal Info"), {"fields": ("display_name", "country", "gender", "type_profile")}),
@@ -48,7 +47,7 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
         (_("Important Dates"), {"fields": ("last_login", "date_joined")}),
-        (_("Other Info"), {"fields": ("image", "followers", "is_premium", "is_spam_email")}),
+        (_("Other Info"), {"fields": ("image", "followers", "is_spam_email")}),
     )
     add_fieldsets = (
         (

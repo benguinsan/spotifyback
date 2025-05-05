@@ -28,14 +28,13 @@ class CustomUserSerializer(CountryFieldMixin, UserSerializer):
             "gender",
             "image",
             "country",
-            "is_premium",
             "type_profile",
             "artist_slug",
             "followers_count",
             "following_count",
             "playlists_count",
         )
-        read_only_fields = ("email", "type_profile", "color", "is_premium")
+        read_only_fields = ("email", "type_profile", "color")
 
 class CustomUserUpdateSerializer(CountryFieldMixin, serializers.ModelSerializer):
     class Meta(UserSerializer.Meta):
@@ -48,14 +47,13 @@ class CustomUserUpdateSerializer(CountryFieldMixin, serializers.ModelSerializer)
             "image",
             "type_profile",
             "country",
-            "is_premium",
         )
-        read_only_fields = ("email", "type_profile", "is_premium")
+        read_only_fields = ("email", "type_profile")
 
 class ShortCustomUserSerializer(CustomUserSerializer):
     class Meta(UserSerializer.Meta):
         model = User
-        fields = ("id", "display_name", "type_profile", "artist_slug", "image", "followers_count", "is_premium")
+        fields = ("id", "display_name", "type_profile", "artist_slug", "image", "followers_count")
 
 class UpdateUserProfileImageSerializer(serializers.ModelSerializer):
     class Meta:

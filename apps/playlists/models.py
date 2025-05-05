@@ -29,7 +29,7 @@ class Playlist(TimeStampedModel):
         upload_to=get_path_upload_image_playlist,
         validators=[validate_image_size],
         blank=True,
-        default="default/playlist.jpg",
+        default="default/playlist.png",
     )
     release_date = models.DateField(_("release date"), blank=True, null=True, 
         # default=date.today

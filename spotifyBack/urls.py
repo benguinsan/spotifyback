@@ -8,14 +8,11 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/", include("apps.users.api.urls"), name="users"),
-    path("api/v1/subscriptions/", include("apps.subscriptions.api.urls"), name="subscriptions"),
-    path("api/v1/payments/", include("apps.payments.api.urls"), name="payments"),
     path("api/v1/genres/", include("apps.genre.api.urls"), name="genres"),
     path("api/v1/artists/", include("apps.artists.api.urls"), name="artists"),
     path("api/v1/tracks/", include("apps.audio.api.urls"), name="tracks"),
     path("api/v1/albums/", include("apps.albums.api.urls"), name="albums"),
     path("api/v1/playlists/", include("apps.playlists.api.urls"), name="playlists"),
-    # path("api/v1/analytics/", include("apps.analytics.api.urls"), name="analytics"),
 ]
 
 # Media Assets

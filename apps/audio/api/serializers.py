@@ -15,7 +15,6 @@ class ShortAlbumSerializer(serializers.ModelSerializer):
             "slug",
             "title",
             "image",
-            "color",
             "is_private",
         ]
 
@@ -33,7 +32,6 @@ class TrackSerializer(serializers.ModelSerializer):
             "title",
             "duration",
             "image",
-            "color",
             "genre",
             "album",
             "file",
@@ -52,7 +50,6 @@ class TrackSerializer(serializers.ModelSerializer):
             "likes_count": {"read_only": True},
             "user_of_likes": {"read_only": True},
             "duration": {"read_only": True},
-            "color": {"read_only": True},
         }
 
 class ShortTrackSerializer(TrackSerializer):
@@ -66,7 +63,6 @@ class ShortTrackSerializer(TrackSerializer):
             "file",
             "duration",
             "image",
-            "color",
             "plays_count",
             "genre",
             "album",

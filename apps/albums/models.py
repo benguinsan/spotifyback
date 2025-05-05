@@ -34,7 +34,7 @@ class Album(TimeStampedModel):
         upload_to=get_path_upload_image_album,
         validators=[validate_image_size],
         blank=True,
-        default="default/album.jpg",
+        default="default/album.png",
     )
     color = ColorField(default="#202020")
     release_date = models.DateField(_("release date"), blank=True, null=True, default=date.today)

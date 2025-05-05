@@ -37,15 +37,6 @@ class IsOwnerUserPermission(permissions.IsAuthenticated):
             return True
         return obj.user == request.user or obj.artist.user == request.user
 
-
-class IsPremiumUserPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            if request.user.is_premium:
-                return True
-        return False
-
-
 class CurrentUserOrReadOnlyPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:

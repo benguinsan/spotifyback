@@ -24,7 +24,6 @@ class PlaylistSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "image",
-            "color",
             "user",
             "tracks",
             "genre",
@@ -35,7 +34,6 @@ class PlaylistSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        extra_kwargs = {"color": {"read_only": True}}
 
 
 class UpdatePlaylistSerializer(PlaylistSerializer):
@@ -65,10 +63,9 @@ class ShortPlaylistSerializer(PlaylistSerializer):
             "slug",
             "title",
             "image",
-            "color",
-            "track_slug",
             "user",
             "genre",
+            "track_slug",
             "is_private",
         ]
 
