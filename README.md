@@ -23,12 +23,24 @@ docker-compose down
 - Sử dụng file `.env` hoặc `.envs` để cấu hình các biến như DB, SECRET_KEY, ...
 - Ví dụ:
 ```
-DJANGO_SECRET_KEY=your_secret_key
-POSTGRES_DB=spotify
-POSTGRES_USER=spotify
-POSTGRES_PASSWORD=yourpassword
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
+# DJANGO
+DEBUG=True
+SECRET_KEY=change_this_to_a_secure_random_string
+INTERNAL_IPS=127.0.0.1
+ALLOWED_HOSTS=localhost,127.0.0.1
+DJANGO_SETTINGS_MODULE=spotifyBack.settings
+DOMAIN=localhost:8080
+
+# DATABASE
+DB_NAME=spotify_clone
+DB_USER=ben
+DB_PASSWORD=change_this_password
+DB_HOST=db
+DB_PORT=3306
+
+# JWT
+AUTH_COOKIE_SECURE=False
+SIGNING_KEY=change_this_to_a_secure_random_string
 ```
 
 ## Các lệnh quản trị Django (nếu không dùng Docker)
