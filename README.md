@@ -1,7 +1,9 @@
 # Spotify Clone Backend (Django)
 
+
 ## Giới thiệu
 Đây là backend của dự án Spotify Clone, sử dụng Django, Django REST Framework và MySQL.
+Frontend của dự án có thể được tìm thấy tại: [Spotify Clone Frontend](https://github.com/benguinsan/spotifyFront)
 
 ## Chạy bằng Docker
 
