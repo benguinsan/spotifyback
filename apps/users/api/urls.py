@@ -5,6 +5,7 @@ from . import views
 app_name = "users"
 
 urlpatterns = [
+    re_path(r"^auth/o/(?P<provider>\S+)/$", views.CustomProviderAuthView.as_view(), name="google-auth"),
     re_path(r'^auth/', include('djoser.urls')),
     path("auth/jwt/create/", views.CustomTokenObtainPairView.as_view(), name="jwt-create"),
     path("auth/jwt/refresh/", views.CustomTokenRefreshView.as_view(), name="jwt-refresh"),
@@ -16,5 +17,5 @@ urlpatterns = [
     path("users/<int:user_id>/following/", views.ListUserFollowingAPIView.as_view(), name="list-user-following"),
     path("users/profiles/", views.ListUsersProfileAPIView.as_view(), name="list-users-profile"),
     path("users/profiles/my/", views.DetailMyUserProfileAPIView.as_view(), name="detail-my-user-profile"),
-    # path("users/profiles/my/image/", views.MyUserProfileImageAPIView.as_view(), name="update-my-user-profile-image"),
+    path("users/profiles/my/image/", views.MyUserProfileImageAPIView.as_view(), name="update-my-user-profile-image"),
 ]

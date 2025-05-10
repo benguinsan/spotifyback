@@ -178,3 +178,5 @@ class AddRemoveTrackPlaylistAPIView(views.APIView):
             return Response({"msg": "Track not in playlist"}, status=status.HTTP_404_NOT_FOUND)
         playlist.tracks.remove(track)
         return Response({"msg": "Track removed from playlist"}, status=status.HTTP_204_NO_CONTENT)
+
+

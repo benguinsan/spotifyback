@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_filters',
     'corsheaders',
+    'social_django',
 
 
     'apps.users',
@@ -186,10 +187,10 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-# AUTHENTICATION_BACKENDS = (
-#     "social_core.backends.google.GoogleOAuth2",
-#     "django.contrib.auth.backends.ModelBackend",
-# )
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
 
 DJOSER = {
     "LOGIN_FIELD": "email",
@@ -208,6 +209,7 @@ DJOSER = {
         "SOCIAL_AUTH_ALLOWED_REDIRECT_URIS",
         default=[
             "http://localhost:3000",
+            "http://localhost:3000/account/auth/google",
         ],
     ),
     "ACTIVATION_URL": "account/auth/activate/{uid}/{token}",
@@ -289,3 +291,11 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'openid',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ["first_name", "last_name"]

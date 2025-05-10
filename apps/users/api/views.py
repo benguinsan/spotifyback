@@ -263,3 +263,20 @@ class MyUserProfileImageAPIView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+# login with google
+@extend_schema(tags=["Oauth2"])
+class CustomProviderAuthView(ProviderAuthView):
+    """
+    Extend Djoser's ProviderAuthView to set cookies for access and refresh tokens.
+    """
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == 201:
+            access_token = response.data.get("access")
+            refresh_token = response.data.get("refresh")
+
+            set_cookie(response, access_token, refresh_token)
+
+        return response
