@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.genre',
     'apps.playlists',
+    'apps.chatbot'
 ]
 
 MIDDLEWARE = [

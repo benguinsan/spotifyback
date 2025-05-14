@@ -7,13 +7,6 @@ from apps.genre.models import Genre
 
 # Get, Post List Genre (GET, POST)
 class GenreListAPIView(generics.ListCreateAPIView):
-    """
-    API endpoint that allows genres to be viewed.
-    Admin can create new genre.
-    All users can see all genres.
-    Color field generates on image.
-    """
-
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     pagination_class = pagination.MaxResultsSetPagination
@@ -30,12 +23,6 @@ class GenreListAPIView(generics.ListCreateAPIView):
 
 # Get, Put, Delete Genre (GET, PUT, DELETE)
 class GenreDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API endpoint that allows genres details to be viewed.
-    Admin can update and delete genre.
-    Color field generates on image.
-    """
-
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = "slug"

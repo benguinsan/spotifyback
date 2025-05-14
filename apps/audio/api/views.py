@@ -14,10 +14,6 @@ from apps.core.permissions import ArtistRequiredPermission
 
 # Get List Track (GET)
 class TrackListAPIView(generics.ListAPIView):
-    """
-    Track list. Public permission.
-    """
-
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -31,10 +27,6 @@ class TrackListAPIView(generics.ListAPIView):
 
 # Get List Track Liked (GET)
 class TrackLikedListAPIView(generics.ListAPIView):
-    """
-    Track liked list. Private permission.
-    """
-
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.LargeResultsSetPagination
@@ -50,10 +42,6 @@ class TrackLikedListAPIView(generics.ListAPIView):
 
 # Get, Post List Track Liked (GET, POST)
 class TrackDetailAPIView(generics.RetrieveAPIView):
-    """
-    Track detail. Public permission.
-    """
-
     permission_classes = [permissions.AllowAny]
     serializer_class = TrackSerializer
     lookup_field = "slug"
@@ -63,11 +51,6 @@ class TrackDetailAPIView(generics.RetrieveAPIView):
 
 # Get, Post List Recently Played Track (GET, POST)
 class TrackRecentlyPlayedAPIView(generics.ListAPIView):
-    """
-    List all recently played track. Public view.
-    Filter last played 10 tracks by users or anonymous(by viewer IP).
-    """
-
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -97,11 +80,6 @@ class TrackRecentlyPlayedAPIView(generics.ListAPIView):
 
 # Get List Track Recently Played By User (GET)
 class TrackRecentlyPlayedByUserAPIView(generics.ListAPIView):
-    """
-    List all recently played track. Public view.
-    Filter last played 10 tracks by user_id.
-    """
-
     permission_classes = [permissions.AllowAny]
     serializer_class = ShortTrackSerializer
     pagination_class = pagination.StandardResultsSetPagination
@@ -122,11 +100,6 @@ class TrackRecentlyPlayedByUserAPIView(generics.ListAPIView):
 
 # Get, Post List My Track (GET, POST)
 class TrackMyListCreateAPIView(generics.ListCreateAPIView):
-    """
-    List all my tracks.
-    Only for authenticated user(artist).
-    """
-
     permission_classes = [ArtistRequiredPermission]
     pagination_class = pagination.StandardResultsSetPagination
     filter_backends = [dj_filters.DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -151,10 +124,6 @@ class TrackMyListCreateAPIView(generics.ListCreateAPIView):
 
 # Get, Put, Delete My Track (GET, PUT, DELETE)
 class TrackMyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Track detail. Only for authenticated user(artist).
-    """
-
     permission_classes = [ArtistRequiredPermission]
     serializer_class = TrackCreateSerializer
     lookup_field = "slug"
@@ -168,8 +137,6 @@ class TrackMyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 # Streaming track (GET)
 class StreamingTrackAPIView(views.APIView):
-    """Listen track. Public permission."""
-
     serializer_class = None
     permission_classes = [permissions.AllowAny]
     http_method_names = ["get"]
@@ -184,25 +151,19 @@ class StreamingTrackAPIView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         track = self.get_object()
-        viewer_ip = request.META.get("REMOTE_ADDR", None)
-
+        
         if os.path.exists(track.file.path):
             self.set_play(track)
-            TrackPlayed.record_listening(
-                user=request.user if request.user.is_authenticated else None,
-                track=track,
-                viewer_ip=viewer_ip,
-            )
-
+            
             return FileResponse(open(track.file.path, "rb"), filename=track.file.name)
         else:
-            return Http404
+            raise Http404()
 
 
 # Streaming track (GET)
 class StreamingMyTrackAPIView(StreamingTrackAPIView):
     """
-    Listen my track. Only for authenticated user(artist).
+    Listen my track.
     """
 
     permission_classes = [ArtistRequiredPermission]
@@ -214,7 +175,7 @@ class StreamingMyTrackAPIView(StreamingTrackAPIView):
 
 # Download track (GET)
 class DownloadTrackAPIView(views.APIView):
-    """Download track. Public permission."""
+    """Download track."""
 
     serializer_class = None
     permission_classes = [permissions.AllowAny]

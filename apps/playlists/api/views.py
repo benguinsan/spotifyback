@@ -18,7 +18,7 @@ from apps.playlists.models import FavoritePlaylist, Playlist
 
 class PlaylistListAPIView(generics.ListAPIView):
     """
-    Playlist List API View. Public view.
+    Playlist List API View.
     """
 
     permission_classes = [permissions.AllowAny]
@@ -124,11 +124,7 @@ class PlaylistFavoriteCreateAPIView(views.APIView):
     Favorite Playlist Create API View.
     Private view, only for authenticated users and owner.
     - `POST`: Add playlist to favorites.
-    1. If playlist already in favorites, return `HTTP_400_BAD_REQUEST.
-    2. If playlist not in favorites, create new favorite and return `HTTP_201_CREATED`.
     - `DELETE`: Remove playlist from favorites.
-    1. If playlist not in favorites, return `HTTP_404_NOT_FOUND`.
-    2. If playlist in favorites, delete favorite and return `HTTP_204_NO_CONTENT`.
     """
 
     permission_classes = [permissions.IsAuthenticated]
@@ -153,11 +149,7 @@ class AddRemoveTrackPlaylistAPIView(views.APIView):
     Add Remove Track Playlist API View.
     Private view, only for authenticated users and owner.
     - `POST`: Add track to playlist.
-    1. If track already in playlist, return `HTTP_400_BAD_REQUEST.
-    2. If track not in playlist, add track to playlist and return `HTTP_201_CREATED`.
     - `DELETE`: Remove track from playlist.
-    1. If track not in playlist, return `HTTP_404_NOT_FOUND`.
-    2. If track in playlist, remove track from playlist and return `HTTP_204_NO_CONTENT`.
     """
 
     permission_classes = [IsOwnerUserPermission]
